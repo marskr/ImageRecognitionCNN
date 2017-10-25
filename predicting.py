@@ -13,7 +13,7 @@ import numpy as np
 # dimensions of our images.
 img_width, img_height = 150, 150
 json_name, h5_name = "modelCNN.json", "modelCNN.h5"
-pic_sample_dir = "dog.1569.jpg"
+pic_sample_dir = "test_pictures/cat.7119.jpg"
 list_of_animals = ["dogs", "cats"]
 
 
@@ -48,23 +48,13 @@ class MachineLearningModel:
         classes = loaded_model.predict_classes(img)
         return classes
 
-
-def print_animal(prediction_result):
-    if prediction_result[0] == 0:
-        print_animal("It's a dog!")
-    elif prediction_result[0] == 1:
-        print_animal("It's a cat!")
-    else:
-        print_animal("ERROR!")
+    def printAnimal(self, prediction_result):
+        if prediction_result[0] == 0:
+            print("It's a dog!")
+        elif prediction_result[0] == 1:
+            print("It's a cat!")
+        else:
+            print("ERROR!")
 
 MLM = MachineLearningModel(img_width, img_height, json_name, h5_name, pic_sample_dir)
-classes = MLM.loadDataModel()
-
-# print_animal(classes)
-
-
-if classes[0] == 1:
-    print("It's a cat!")
-else:
-    print("It's a dog!")
-
+MLM.printAnimal(MLM.loadDataModel())

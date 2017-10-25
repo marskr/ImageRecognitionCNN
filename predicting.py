@@ -49,20 +49,22 @@ class MachineLearningModel:
         return classes
 
 
-def print_animal(argument):
-    if argument == 0:
+def print_animal(prediction_result):
+    if prediction_result[0] == 0:
         print_animal("It's a dog!")
-    elif argument == 1:
+    elif prediction_result[0] == 1:
         print_animal("It's a cat!")
     else:
         print_animal("ERROR!")
 
 MLM = MachineLearningModel(img_width, img_height, json_name, h5_name, pic_sample_dir)
 classes = MLM.loadDataModel()
+
+# print_animal(classes)
+
+
 if classes[0] == 1:
     print("It's a cat!")
 else:
     print("It's a dog!")
-
-
 

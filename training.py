@@ -13,11 +13,11 @@ import numpy as np
 # dimensions of our images.
 img_width, img_height = 150, 150
 
-train_data_dir = 'data/train'
-validation_data_dir = 'data/validation'
+train_data_dir = 'algo_learning_data/train'
+validation_data_dir = 'algo_learning_data/validation'
 nb_train_samples = 2000
 nb_validation_samples = 1000
-epochs = 2
+epochs = 50
 batch_size = 16
 json_name = "modelCNN.json"
 h5_name = "modelCNN.h5"

@@ -9,12 +9,19 @@ from keras import backend as K
 from keras.models import model_from_json
 import cv2
 import numpy as np
+import json
 
-# dimensions of our images.
-img_width, img_height = 150, 150
-json_name, h5_name = "modelCNN.json", "modelCNN.h5"
-pic_sample_dir_pre = "test_pictures/"
-pic_sample_dir_pos = ".jpg"
+    data = json.load(json_file)
+
+for p in data['CNN_predicting_settings']:
+    # dimensions of our images.
+    img_width = p['image_width']
+    img_height = p['image_height']
+    json_name = p['model_json_name']
+    h5_name = p['model_h5_name']
+    pic_sample_dir_pre = p['pic_sample_dir_pre']
+    pic_sample_dir_pos = p['pic_sample_dir_pos']
+
 pic_sample_list = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
 list_of_animals = ["dog", "cat", "rat", "horse"]
 

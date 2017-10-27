@@ -9,18 +9,23 @@ from keras import backend as K
 from keras.models import model_from_json
 import cv2
 import numpy as np
+import json
 
-# dimensions of our images.
-img_width, img_height = 150, 150
+with open('data.txt') as json_file:
+    data = json.load(json_file)
 
-train_data_dir = 'algo_learning_data/train'
-validation_data_dir = 'algo_learning_data/validation'
-nb_train_samples = 2000
-nb_validation_samples = 1000
-epochs = 50
-batch_size = 16
-json_name = "modelCNN.json"
-h5_name = "modelCNN.h5"
+for p in data['CNN_training_settings']:
+    # dimensions of our images.
+    img_width = p['image_width']
+    img_height = p['image_height']
+    train_data_dir = p['train_data_direction']
+    validation_data_dir = p['validation_data_direction']
+    nb_train_samples = p['nb_train_samples']
+    nb_validation_samples = p['nb_validation_samples']
+    json_name = p['model_json_name']
+    h5_name = p['model_h5_name']
+    epochs = p['model_epochs']
+    batch_size = p['model_batch_size']
 
 
 class MachineLearningModel:
@@ -105,10 +110,10 @@ class MachineLearningModel:
         model_json = model.to_json()
         with open(json_name, "w") as json_file:
             json_file.write(model_json)
-        print("saved model in json format: " + json_name)
+        print("saved model in json format to: " + json_name)
 
         model.save_weights(h5_name)
-        print("saved model to: " + h5_name)
+        print("saved model in h5 format to: " + h5_name)
 
 MLM = MachineLearningModel(img_width, img_height, json_name, h5_name, train_data_dir, validation_data_dir,
                            nb_train_samples, nb_validation_samples, epochs, batch_size)

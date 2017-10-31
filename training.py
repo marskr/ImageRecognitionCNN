@@ -13,6 +13,7 @@ import json
 
 data_file = "data.txt"
 
+
 class JsonManager:
 
     def __init__(self, file_name):

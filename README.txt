@@ -11,7 +11,7 @@ product between their weights and a small region they are connected to the input
 
 RELU  -> elementwise activation function. Leaves the volume unchanged;
 
-POOL  -> perform a downsampling operation along spatial dimentions (width, height);
+POOL  -> perform a downsampling operation along spatial dimensions (width, height);
 
 FC    -> (fully-connected) layer will compute the class scores, resulting in volume of size.
 
@@ -28,7 +28,7 @@ model.predict() - generates output predictions for the input samples. Computatio
 Additional dictionary:
 
 individual weights - represent the strength of connections between units. If the weight from unit A to unit B has 
-greater magnitude (wielkoœæ), it means that A has greater influence over B (all else being equal).
+greater magnitude (wielkoÅ“Ã¦), it means that A has greater influence over B (all else being equal).
 
 weights - a set of filter coefficients, defining an image feature. For units in higher layers the inputs are not
 from pixels anymore but from units in lower layers. Incoming weights are more like - preferred input patterns.

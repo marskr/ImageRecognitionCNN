@@ -11,19 +11,21 @@ import cv2
 import numpy as np
 import json
 
-    data = json.load(json_file)
-
-for p in data['CNN_predicting_settings']:
-    # dimensions of our images.
-    img_width = p['image_width']
-    img_height = p['image_height']
-    json_name = p['model_json_name']
-    h5_name = p['model_h5_name']
-    pic_sample_dir_pre = p['pic_sample_dir_pre']
-    pic_sample_dir_pos = p['pic_sample_dir_pos']
-
 pic_sample_list = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
 list_of_animals = ["dog", "cat", "rat", "horse"]
+data_file = "data.txt"
+
+
+class JsonManager:
+
+    def __init__(self, file_name):
+        self.file_name = file_name
+
+    def processDataFromFile(self):
+        with open(self.file_name) as json_file:
+            data = json.load(json_file)
+
+        return data
 
 
 class MachineLearningModel:
@@ -40,28 +42,28 @@ class MachineLearningModel:
         self.pic_sample_dir_pos = pic_sample_dir_pos
 
     def loadDataModel(self):
-        json_file = open(json_name, 'r')
+        json_file = open(self.json_name, 'r')
         loaded_model_json = json_file.read()
         json_file.close()
         loaded_model = model_from_json(loaded_model_json)
 
         # load weights into new model
-        loaded_model.load_weights(h5_name)
+        loaded_model.load_weights(self.h5_name)
         print("Loaded model from disk")
 
         # evaluate loaded model on test data
         loaded_model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 
         for element in pic_sample_list:
-            classes = loaded_model.predict_classes(self.imageOps(pic_sample_dir_pre + element + pic_sample_dir_pos))
+            classes = loaded_model.predict_classes(self.imageOps(self.pic_sample_dir_pre + element + self.pic_sample_dir_pos))
             self.printAnimal(classes)
 
     def imageOps(self, pic_sample_dir):
         print("Loaded sample picture from directory " + pic_sample_dir + ":")
 
         img = cv2.imread(pic_sample_dir)
-        img = cv2.resize(img, (img_width, img_height))
-        return np.reshape(img, [1, img_width, img_height, 3])
+        img = cv2.resize(img, (self.img_width, self.img_height))
+        return np.reshape(img, [1, self.img_width, self.img_height, 3])
 
     def printAnimal(self, prediction_result):
         if prediction_result[0] == 0:
@@ -75,6 +77,17 @@ class MachineLearningModel:
         else:
             print("ERROR!")
 
-MLM = MachineLearningModel(img_width, img_height, json_name, h5_name, list_of_animals, pic_sample_list,
-                           pic_sample_dir_pre, pic_sample_dir_pos)
+JM = JsonManager(data_file)
+data = JM.processDataFromFile()
+
+for p in data['CNN_predicting_settings']:
+    MLM = MachineLearningModel(p['image_width'],
+                               p['image_height'],
+                               p['model_json_name'],
+                               p['model_h5_name'],
+                               list_of_animals,
+                               pic_sample_list,
+                               p['pic_sample_dir_pre'],
+                               p['pic_sample_dir_pos'])
+
 MLM.loadDataModel()

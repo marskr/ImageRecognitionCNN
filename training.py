@@ -11,21 +11,18 @@ import cv2
 import numpy as np
 import json
 
-with open('data.txt') as json_file:
-    data = json.load(json_file)
+data_file = "data.txt"
 
-for p in data['CNN_training_settings']:
-    # dimensions of our images.
-    img_width = p['image_width']
-    img_height = p['image_height']
-    train_data_dir = p['train_data_direction']
-    validation_data_dir = p['validation_data_direction']
-    nb_train_samples = p['nb_train_samples']
-    nb_validation_samples = p['nb_validation_samples']
-    json_name = p['model_json_name']
-    h5_name = p['model_h5_name']
-    epochs = p['model_epochs']
-    batch_size = p['model_batch_size']
+class JsonManager:
+
+    def __init__(self, file_name):
+        self.file_name = file_name
+
+    def processDataFromFile(self):
+        with open(self.file_name) as json_file:
+            data = json.load(json_file)
+
+        return data
 
 
 class MachineLearningModel:
@@ -45,9 +42,9 @@ class MachineLearningModel:
 
     def trainDataModel(self):
         if K.image_data_format() == 'channels_first':
-            input_shape = (3, img_width, img_height)
+            input_shape = (3, self.img_width, self.img_height)
         else:
-            input_shape = (img_width, img_height, 3)
+            input_shape = (self.img_width, self.img_height, 3)
 
         # declaration of a sequential model format:
         model = Sequential()
@@ -89,32 +86,45 @@ class MachineLearningModel:
         test_datagen = ImageDataGenerator(rescale=1. / 255)
 
         train_generator = train_datagen.flow_from_directory(
-            train_data_dir,
-            target_size=(img_width, img_height),
-            batch_size=batch_size,
+            self.train_data_dir,
+            target_size=(self.img_width, self.img_height),
+            batch_size=self.batch_size,
             class_mode='binary')
 
         validation_generator = test_datagen.flow_from_directory(
-            validation_data_dir,
-            target_size=(img_width, img_height),
-            batch_size=batch_size,
+            self.validation_data_dir,
+            target_size=(self.img_width, self.img_height),
+            batch_size=self.batch_size,
             class_mode='binary')
 
         model.fit_generator(
             train_generator,
-            steps_per_epoch=nb_train_samples // batch_size,
-            epochs=epochs,
+            steps_per_epoch=self.nb_train_samples // self.batch_size,
+            epochs=self.epochs,
             validation_data=validation_generator,
-            validation_steps=nb_validation_samples // batch_size)
+            validation_steps=self.nb_validation_samples // self.batch_size)
 
         model_json = model.to_json()
-        with open(json_name, "w") as json_file:
+        with open(self.json_name, "w") as json_file:
             json_file.write(model_json)
-        print("saved model in json format to: " + json_name)
+        print("saved model in json format to: " + self.json_name)
 
-        model.save_weights(h5_name)
-        print("saved model in h5 format to: " + h5_name)
+        model.save_weights(self.h5_name)
+        print("saved model in h5 format to: " + self.h5_name)
 
-MLM = MachineLearningModel(img_width, img_height, json_name, h5_name, train_data_dir, validation_data_dir,
-                           nb_train_samples, nb_validation_samples, epochs, batch_size)
+JM = JsonManager(data_file)
+data = JM.processDataFromFile()
+
+for p in data['CNN_training_settings']:
+    MLM = MachineLearningModel(p['image_width'],
+                               p['image_height'],
+                               p['model_json_name'],
+                               p['model_h5_name'],
+                               p['train_data_direction'],
+                               p['validation_data_direction'],
+                               p['nb_train_samples'],
+                               p['nb_validation_samples'],
+                               p['model_epochs'],
+                               p['model_batch_size'])
+
 MLM.trainDataModel()
